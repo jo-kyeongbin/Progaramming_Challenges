@@ -12,27 +12,32 @@
 
 입력 각 줄에 있는 단어 수와 (공백을 제외한) 글자 수를 세어 출력하라. 한 줄에는 공백 포함 최대 1024글자가 있고, 단어는 공백으로 분리되어 있다. 몇 줄이 들어올지는 미리 알 수 없으므로 EOF를 체크해야 한다. 예를 들어 아래 예제처럼 2줄이 입력되면 2줄에 대해 각각 글자수와 단어수를 두번씩 출력해야 한다.
 
+### 실행 화면 예시
+
+<img src="/img/1-1.png" width="450px" height="300px" title="px(픽셀) 크기 설정" alt="RubberDuck"></img><br/>
+
 ### 코드
+```
+#include <stdio.h>
 
-    #include <stdio.h>
+#define BUFSIZE 1024
 
-    #define BUFSIZE 1024
+int main(void)
+{
+    char line[BUFSIZE];
 
-    int main(void)
-    {
-        char line[BUFSIZE];
-
-        while (fgets(line, BUFSIZE, stdin) != NULL) {
-            int words = 0, letters = 0;
-            int i = 0;
-            while (line[i] != '\n') {
-                if ((i == 0 && line[i] != ' ') ||
-                    (i > 0 && line[i-1] == ' ' && line[i] != ' '))
-                    words++;
-                if (line[i] != ' ') letters++;
-                i++;
-            }
-            printf("%d %d\n", words, letters);
+    while (fgets(line, BUFSIZE, stdin) != NULL) {
+        int words = 0, letters = 0;
+        int i = 0;
+        while (line[i] != '\n') {
+            if ((i == 0 && line[i] != ' ') ||
+                (i > 0 && line[i-1] == ' ' && line[i] != ' '))
+                words++;
+            if (line[i] != ' ') letters++;
+            i++;
         }
-        return 0;
+        printf("%d %d\n", words, letters);
     }
+    return 0;
+}
+```
