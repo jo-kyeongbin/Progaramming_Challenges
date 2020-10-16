@@ -6,4 +6,14 @@
 
 __본 문제들은 교재에 없으며, 교재의 응용 문제로 공부에 많은 도움이 됩니다.__
 
+## 목록
 * [1주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/1_week.md)
+
+
+
+## input 사용법
+ex)
+```
+gcc 1-1.c
+./a.out < 1-1.input
+```
