@@ -17,7 +17,7 @@
 <img src="/img/1-1.png" width="60%" height="60%">
 
 ### 코드
-```
+```c
 #include <stdio.h>
 
 #define BUFSIZE 1024
