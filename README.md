@@ -14,7 +14,7 @@
 
 ### 실행 화면 예시
 
-<center><img src="/img/1-1.png" width="600" height="450"></img></center><br/>
+<center><img src="/img/1-1.png" width="30%" height="40%"></center>
 
 ### 코드
 ```
