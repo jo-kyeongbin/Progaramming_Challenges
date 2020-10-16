@@ -14,25 +14,25 @@
 
 ### 코드
 
-  #include <stdio.h>
+    #include <stdio.h>
 
-  #define BUFSIZE 1024
+    #define BUFSIZE 1024
 
-  int main(void)
-  {
-      char line[BUFSIZE];
+    int main(void)
+    {
+        char line[BUFSIZE];
 
-      while (fgets(line, BUFSIZE, stdin) != NULL) {
-          int words = 0, letters = 0;
-          int i = 0;
-          while (line[i] != '\n') {
-              if ((i == 0 && line[i] != ' ') ||
-                  (i > 0 && line[i-1] == ' ' && line[i] != ' '))
-                  words++;
-              if (line[i] != ' ') letters++;
-              i++;
-          }
-          printf("%d %d\n", words, letters);
-      }
-      return 0;
-  }
+        while (fgets(line, BUFSIZE, stdin) != NULL) {
+            int words = 0, letters = 0;
+            int i = 0;
+            while (line[i] != '\n') {
+                if ((i == 0 && line[i] != ' ') ||
+                    (i > 0 && line[i-1] == ' ' && line[i] != ' '))
+                    words++;
+                if (line[i] != ' ') letters++;
+                i++;
+            }
+            printf("%d %d\n", words, letters);
+        }
+        return 0;
+    }
