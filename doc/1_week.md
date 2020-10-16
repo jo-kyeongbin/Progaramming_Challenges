@@ -61,15 +61,15 @@ int main(void)
     char line[BUFSIZE];
 
     while (fgets(line, BUFSIZE, stdin) != NULL) {
-        if (line[0] == '0') {
+        if (line[0] == '0') { //0으로 시작하면 16진수를 의미한다.
             int hex = 0;
-            sscanf(line + 2, "%x", &hex); // Skip first two characters ("0x")
-            printf("%d\n", hex);
+            sscanf(line + 2, "%x", &hex); //sscanf를 통하여 문자열을 16진수로 바꾼다. line+2를 하는 이유는 0x부분을 건너뛴 숫자부분만 필요하기 때문이다.
+            printf("%d\n", hex); 			//%d를 통하여 16진수를 10진수로 변경하였다.
         }
-        else {
+        else {	//10진수일 경우
             int dec = 0;
-            sscanf(line, "%d", &dec);
-            printf("0x%X\n", dec);
+            sscanf(line, "%d", &dec);	//마찬가지로 문자열을 int로 변경.
+            printf("0x%X\n", dec);		//%X로 16진수 형태로 표현해준다.
         }
     }
     return 0;
@@ -94,13 +94,13 @@ int main(void)
 
 int cyclehas(int n, int x)
 {
-    if (n == x) return 1;
-    while (n != 1) {
-        if (n % 2 == 0) n /= 2;
-        else n = 3*n + 1;
+    if (n == x) return 1;	//x가 해당 수열에 존재하면 1을 리턴해주는 함수이다.
+    while (n != 1) {	//n이 1이 될때까지
+        if (n % 2 == 0) n /= 2;	//짝수이면 2로 나누고,
+        else n = 3*n + 1;	//홀수이면 3n+1을 수행한다.
         if (n == x) return 1;
     }
-    return 0;
+    return 0;	//해당 수열에 존재하지 않으면 0을 리턴한다.
 }
 
 int main(void)
@@ -108,9 +108,10 @@ int main(void)
     int n, x;
 
     while (scanf("%d %d", &n, &x) == 2) {
-        if (cyclehas(n, x)) printf("Y\n");
-        else printf("N\n");
+        if (cyclehas(n, x)) printf("Y\n");	//1을 리턴하여 참이면 Y
+        else printf("N\n");	//아니면 N을 리턴한다.
     }
     return 0;
 }
+
 ```
