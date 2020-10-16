@@ -14,7 +14,7 @@
 
 ### 실행 화면 예시
 
-<img src="/img/1-1.png" width="%30" height="%30" title="px(픽셀) 크기 설정" alt="RubberDuck"></img><br/>
+<img src="/img/1-1.png" width="%20" height="%10" title="px(픽셀) 크기 설정" alt="RubberDuck"></img><br/>
 
 ### 코드
 ```
