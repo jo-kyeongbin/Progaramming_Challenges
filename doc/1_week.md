@@ -86,7 +86,7 @@ int main(void)
 
 ### 실행 화면 예시
 
-<img src="/img/1-2.png" width="60%" height="60%">
+<img src="/img/1-3.png" width="60%" height="60%">
 
 ### 코드
 ```c
