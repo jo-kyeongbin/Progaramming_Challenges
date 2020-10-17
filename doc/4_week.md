@@ -93,70 +93,244 @@ int	main()
 
 ### 실행 화면 예시
 
-<img src="/img/1-2.png" width="60%" height="60%">
+<img src="/img/4-2-2.png" width="60%" height="60%">
 
 ### 코드
 ```c
 #include <stdio.h>
 
-#define BUFSIZE 1024
-
-int main(void)
+int vaildation(char *text, char *s)
 {
-    char line[BUFSIZE];
+	int i;
+	int key;
+	while (*s != '\n')
+	{
+		key = 0;
+		for(i=0;i<6;i++)
+		{
+			if (*s == text[i] || *s == ' ') //6개의 문자에 포함되는 문자인지 파악한다.
+			{
+				key = 1;
+				break;
+			}
+		}
+		if (key == 0) //해당하는 문자가 아닐경우 반복문 종료.
+			break;
+		s++;
+	}
+	if (*s == '\n') //모든 입력문을 순회하였고, 모두 6개의 문자에 포함되면 return 1
+		return (1);
+	else
+		return (-1);
+}
 
-    while (fgets(line, BUFSIZE, stdin) != NULL) {
-        if (line[0] == '0') { //0으로 시작하면 16진수를 의미한다.
-            int hex = 0;
-            sscanf(line + 2, "%x", &hex); //sscanf를 통하여 문자열을 16진수로 바꾼다. line+2를 하는 이유는 0x부분을 건너뛴 숫자부분만 필요하기 때문이다.
-            printf("%d\n", hex); 			//%d를 통하여 16진수를 10진수로 변경하였다.
-        }
-        else {	//10진수일 경우
-            int dec = 0;
-            sscanf(line, "%d", &dec);	//마찬가지로 문자열을 int로 변경.
-            printf("0x%X\n", dec);		//%X로 16진수 형태로 표현해준다.
-        }
-    }
-    return 0;
+int convert_index(char a, char *text)
+{
+	int i;
+	for (i=0;i<6;i++)
+	{
+		if (text[i] == a) //해당 문자를 인덱스로 변환하여 mapping 시켜준다.
+			return i;
+	}
+	return 0; //validation을 거쳐왔기 때문에 매핑이 안될 이유는 없지만 안되면 인덱스 0에 해당하는 매핑을 하기 때문에 오류를 일으킨다.
+}
+
+void upper(char *s) //소문자를 대문자로 변경시켜준다. 문제에서 대소문자를 구분하지 않으므로 하나의 문자로 통일.
+{
+	int i = 0;
+	while(s[i] != '\n')
+	{
+		if (s[i] >= 'a' && s[i] <= 'z')
+			s[i] -= 32;
+		i++;
+	}
+}
+
+int main()
+{
+	char text[8]; //행과 열의 카테고리 인덱스 총 6자리.
+	char map_buf[38]; //순서대로 들어온 36개의 문자
+	char map[6][6]; //6x6의 맵
+	char buf[102]; //암호문을 받는 버퍼
+	char result[100]; //평문을 받는 버퍼
+	int i,j,k,p;
+
+	while (fgets(text,8,stdin)!=NULL)
+	{
+		upper(text);
+		fgets(map_buf, 38, stdin);
+		k = 0;
+		for(i=0;i<6;i++)
+		{
+			for(j=0;j<6;j++)
+			{
+				map[i][j] = map_buf[k++]; //맵에 입력받은 36개의 문자를 저장해준다.
+			}
+		}
+		while(fgets(buf,102,stdin)!=NULL)
+		{
+			upper(buf); //모든 암호문을 대문자로 변경
+			if((vaildation(text,buf) == -1)) //없는 문자를 암호문에 포함시키면 에러 출력.
+			{
+				printf("-ERROR-\n");
+				continue;
+			}
+			i = 0;
+			p = 0;
+			while(buf[i] != '\n')
+			{
+				if (buf[i] == ' ') //공백은 공백으로 유지
+				{
+					result[p++] = ' ';
+					i++;
+					continue;
+				}
+				if ((buf[i] >= 'A' && buf[i] <= 'Z')) //암호문자는 행과 열, 2문자씩 읽어온다.
+				{
+					if((buf[i+1] >= 'A' && buf[i+1] <= 'Z'))
+					{
+						j = convert_index(buf[i++], text); //인덱스로 변환
+						k = convert_index(buf[i++], text);
+						result[p++] = map[j][k]; //맵에서 찾아와서 result에 저장한다.
+					}
+					else //페어형태로 들어와야하는데 한개의 문자만 읽히면 맵핑을 못하므로, 에러 출력.
+					{
+						printf("-ERROR-\n");
+						k = -3;
+						break;
+					}
+				}
+			}
+			if (k != -3) //에러를 출력하지 않았다면 결과 출력.
+			{
+				result[p] = '\0'; //문자열을 출력해주기 위해 마지막에 널문자 추가.
+				printf("%s\n",result);
+			}
+		}
+	}
 }
 ```
 
-## 문제 1-3 : "3n+1 문제" 변형
+## 문제 3
 
 ### 문제설명
-짝수면 2로 나누고, 홀수면 3을 곱한 다음 1을 더하는 방식으로 수열을 만들 수 있다. 어떤 숫자로 시작하든지, 이 수열에 언젠가는 1이 등장한다고 수학자들은 추측하고 있다. 예를 들어 n=22라면
-22 11 34 17 52 26 13 40 20 10 5 16 8 4 2 1
-이런 수열이 만들어진다.<br><br>
-숫자 두 개가 있을 때, 첫번째 숫자로 시작한 수열에 두 번째 숫자가 포함되는지를 판단해 포함되면 Y, 그렇지 않으면 N을 출력하라.
+__<참고: 문제 18 – 월도르프를 찾아라>__<br>
+<br>
+문자로 이루어진 배열 속에 숨은 Teemo를 찾아라.<br>
+위장이 뛰어난 Teemo는 월도르프와는 다르게 이름의 한글자를 변형시켰을 수도 있다.<br>
+Teemo, Taemo, heemo, Teemy, Teemm ... 등이 가능하다.<br>
+<br>
+m*n 배열속에서 좌우대각선 총 8방향으로 찾을 수 있다.<br>
+대소문자는 구분하지 않으며 결과로는 찾은 Teemo를 #으로 처리한 문자열을 출력한다.<br>
+Teemo가 여러 개가 나오면 모든 Teemo를 다 찾아야 한다.<br>
+
+------
+
+입력<br>
+<br>
+* 첫 번째 줄에는 케이스의 수 (양의 정수)
+* 두 번째 줄은 빈칸 (두 개의 다른 케이스 사이에도 빈칸 줄)
+* 각 케이스는 한 쌍의 정수 m(행, 1~50)과 n(열, 1~50)
+* m x n 개의 글자(대소문자)
+<br>
+출력<br>
+<br>
+* Teemo가 #####으로 표시된 그리드
+* 두 개의 서로 다른 케이스에 대한 출력 결과 사이에는 빈 줄을 하나 출력
 
 ### 실행 화면 예시
 
-<img src="/img/1-3.png" width="60%" height="60%">
+<img src="/img/4-3-1.png" width="60%" height="60%">
+<img src="/img/4-3-2.png" width="60%" height="60%">
 
 ### 코드
 ```c
 #include <stdio.h>
 
-int cyclehas(int n, int x)
-{
-    if (n == x) return 1;	//x가 해당 수열에 존재하면 1을 리턴해주는 함수이다.
-    while (n != 1) {	//n이 1이 될때까지
-        if (n % 2 == 0) n /= 2;	//짝수이면 2로 나누고,
-        else n = 3*n + 1;	//홀수이면 3n+1을 수행한다.
-        if (n == x) return 1;
-    }
-    return 0;	//해당 수열에 존재하지 않으면 0을 리턴한다.
-}
+#define M 50
+#define N 50
+#define BUFFERSIZE 1024
+#define DIRECT 8
 
-int main(void)
-{
-    int n, x;
+typedef struct result{
+	int direct_index; //방향성을 저장해주는 변수. ex)0이면, (-1,-1) 오른쪽 아래로 향하는 방향
+	int start_row; //teemo가 시작되는 행의 인덱스
+	int start_col; //teemo가 시작되는 열의 인덱스
+}result;
 
-    while (scanf("%d %d", &n, &x) == 2) {
-        if (cyclehas(n, x)) printf("Y\n");	//1을 리턴하여 참이면 Y
-        else printf("N\n");	//아니면 N을 리턴한다.
+int main() {
+    char waldorf[M][N];
+	char temp[M][N];
+    int testCase, row, col, i, j, k, len, startRow, startCol, direct, t, key=0; //key는 변형된 월도로프를 풀기위한 변수(teemo에서 적어도 한 문자는 달라도 된다.)
+	char word[6] = "teemo"; //찾고자 하는 단어
+
+    int dirRow[DIRECT] = {-1,-1,-1,0,1,1,1,0}; //방향성을 알려주기 위한 배열, ex) -1,-1은 행과 열이 하나씩 감소, 즉 오른쪽 아래로 향하는 방향이다.
+    int dirCol[DIRECT] = {-1,0,1,1,1,0,-1,-1};
+	result answer[300]; //찾은 단어의 위치와 방향성을 저장해주는 구조체 배열.
+
+    scanf("%d",&testCase);
+	getchar();
+    while(testCase--){
+		getchar();
+        scanf("%d %d",&row, &col);
+		getchar();
+        for(i=0; i<row; i++){
+            for(j=0; j<col; j++){
+                waldorf[i][j] = getchar(); // 한 글자씩 읽어와서 waldorf와 temp에 저장한다.
+				temp[i][j] = waldorf[i][j]; //원래의 문자를 저장.
+                if(waldorf[i][j] >= 'A' && waldorf[i][j] <= 'Z'){
+                    waldorf[i][j] += ('a' - 'A'); //모두 소문자로 변경.
+                }
+            }
+			getchar();
+        }
+		k = 0;
+        for(i=0; i<row; i++){
+            for(j=0; j<col; j++){
+                for(direct = 0; direct<DIRECT; direct++){ //맵의 행과 열을 다 순회하며, 상하좌우, 대각선의 모든 방향을 체크한다.
+                    startRow = i, startCol = j, t = 0; //시작위치 저장과 찾고자 하는 단어의 인덱스 초기화.
+                    while(startRow>=0 && startRow<row && startCol>=0 && startCol<col
+                    && word[t]!='\0' && (key == 0 || key == 1)) //단어가 해당 방향에 있는지 찾기 위한 반복문, 다른 문자가 나올 경우 key++, key가 1을 넘기면 반복문 종료.
+                    {
+						if (word[t]!=waldorf[startRow][startCol])
+							key++;
+						startRow += dirRow[direct];
+                       	startCol += dirCol[direct];
+                        t++;
+                    }
+                    if(word[t]=='\0' && (key == 0 || key == 1)){ //단어를 끝까지 순회하였고, 문자도 두개 이상 다르지 않을 경우 값을 저장한다.
+                        answer[k].start_row = i;
+						answer[k].start_col = j;
+						answer[k++].direct_index = direct;
+                    }
+					key = 0;
+                }
+            }
+        }
+		k--; //마지막에 k++로 끝났기때문에 수행
+		while(k >= 0) //찾은 위치만큼 반복문 순회한다.
+		{	
+			i = 0;
+			startRow = answer[k].start_row, startCol = answer[k].start_col;
+			direct = answer[k].direct_index;
+            while(startRow>=0 && startRow<row && startCol>=0 && startCol<col && i < 5) //teemo의 문자수가 5개여서 5번만 수행하는데, 맵을 벗어나지 않아야 한다.
+            {
+                temp[startRow][startCol] = '#'; //찾은 단어는 #으로 바꾼다.
+				startRow += dirRow[direct];
+                startCol += dirCol[direct];
+				i++;
+            }
+			k--;
+		}
+		for(i=0;i<row;i++)//결과를 출력해준다.
+		{
+			for(j=0;j<col;j++)
+				printf("%c",temp[i][j]);
+			printf("\n");
+		}
+		if (testCase != 0)
+		printf("\n");
     }
     return 0;
 }
-
 ```
