@@ -1,43 +1,27 @@
 # Progaramming_Challenges
 
 
-문제해결프로그래밍 실습 시간에 다루었던 소스 코드를 기반으로 복습차원으로 주석을 추가하였습니다.
+문제해결프로그래밍 실습 시간에 직접 작성한 소스 코드를 기반으로 복습차원으로 주석을 추가하였습니다.<br>
+교재는 [**Programming Challenges**](http://www.programming-challenges.com)를 사용합니다.<br>
+[주의] 보여주기용이 아닌 문제에 맞춰서만 작성한 코드이기 때문에 클린하지 않을 수 있습니다.<br>
+표절 방지를 위해 시험이 마감된 소스만 업로드 하였습니다.<br>
+문제에는 여러 테스트케이스가 적용됩니다.<br>
+따라서 좋은 결과를 얻기 위해서는 어떤 테스트 케이스가 들어와야 오류가 발생할지 고려하면 됩니다.<br>
 
-교재는 [**Programming Challenges**](http://www.programming-challenges.com)를 사용합니다.
+__본 문제들은 교재에 없으며, 교재의 응용 문제로 공부에 많은 도움이 됩니다.__
+
+## 목록
+* [1주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/1_week.md)
+* [2주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/2_week.md)
+* [3주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/3_week.md)
+* [4주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/4_week.md)
+* [5주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/5_week.md)
 
 
-## 문제 1-1 : 글자 세리기
 
-### 문제설명
-
-입력 각 줄에 있는 단어 수와 (공백을 제외한) 글자 수를 세어 출력하라. 한 줄에는 공백 포함 최대 1024글자가 있고, 단어는 공백으로 분리되어 있다. 몇 줄이 들어올지는 미리 알 수 없으므로 EOF를 체크해야 한다. 예를 들어 아래 예제처럼 2줄이 입력되면 2줄에 대해 각각 글자수와 단어수를 두번씩 출력해야 한다.
-
-### 실행 화면 예시
-
-<img src="/img/1-1.png" width="450px" height="300px" title="px(픽셀) 크기 설정" alt="RubberDuck"></img><br/>
-
-### 코드
+## input파일 사용법
+ex)
 ```
-#include <stdio.h>
-
-#define BUFSIZE 1024
-
-int main(void)
-{
-    char line[BUFSIZE];
-
-    while (fgets(line, BUFSIZE, stdin) != NULL) {
-        int words = 0, letters = 0;
-        int i = 0;
-        while (line[i] != '\n') {
-            if ((i == 0 && line[i] != ' ') ||
-                (i > 0 && line[i-1] == ' ' && line[i] != ' '))
-                words++;
-            if (line[i] != ' ') letters++;
-            i++;
-        }
-        printf("%d %d\n", words, letters);
-    }
-    return 0;
-}
+gcc 1-1.c
+./a.out < 1-1.input
 ```
