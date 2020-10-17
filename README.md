@@ -11,11 +11,11 @@ __[주의] 보여주기용이 아닌 문제에 맞춰서만 작성한 코드이�
 __본 문제들은 교재에 없으며, 교재의 응용 문제로 공부에 많은 도움이 됩니다.__
 
 ## 목록
-* [1주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/1_week.md)
-* [2주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/2_week.md)
-* [3주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/3_week.md)
-* [4주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/4_week.md)
-* [5주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/5_week.md)
+* [[1주차]실습](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/1_week.md)
+* [[2주차]자료구조1](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/2_week.md)
+* [[3주차]자료구조2](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/3_week.md)
+* [[4주차]문자열1](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/4_week.md)
+* [[5주차]문자열2](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/5_week.md)
 
 
 
