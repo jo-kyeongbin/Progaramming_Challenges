@@ -12,6 +12,10 @@ __본 문제들은 교재에 없으며, 교재의 응용 문제로 공부에 많
 
 ## 목록
 * [1주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/1_week.md)
+* [2주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/2_week.md)
+* [3주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/3_week.md)
+* [4주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/4_week.md)
+* [5주차](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/5_week.md)
 
 
 
