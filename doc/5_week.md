@@ -89,15 +89,18 @@ int main()
 ### 실행 화면 예시
 
 * 입력
-    8 dog green name element table element target title
-    5 power ready yellow ultra auto
-    2 test target
-    1 a
+
+	    8 dog green name element table element target title
+	    5 power ready yellow ultra auto
+	    2 test target
+	    1 a
+    
 * 출력
-    dog green name element table 
-    power ready yellow 
-    test target 
-    a 
+
+	    dog green name element table 
+	    power ready yellow 
+	    test target 
+	    a 
 
 ### 코드
 ```c
