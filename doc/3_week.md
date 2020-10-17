@@ -14,7 +14,7 @@
 n(n = 14)일 동안의 3당의 행보를 시뮬레이션 하면 다음과 같이 표시할 수 있다.<br>
 시뮬레이션은 항상 일요일에 시작하며 주말은 휴일이므로 동맹 휴업이 없다고 가정한다.<br>
 
-<img src="/img/2-1.png" width="60%" height="60%">
+<img src="/img/3-1-1.jpeg" width="60%" height="60%">
 
 > 이 결과를 보면 14일 동안 1번의 동맹 휴업(12일)이 있음을 알 수 있다. <br>
 3, 6, 9일의 경우 휴업을 해도 되는 날이긴 하지만 반 이상의 정당이 추진하지 않았으므로 휴업이 일어나지 않았고, 8일은 반 이상의 정당이 휴업을 추진하였으나 주말이기에 동맹 휴업이 일어나지 않았다. <br>
@@ -44,80 +44,211 @@ Lost: 와 숫자 사이, 요일: 과 숫자 사이에는 반드시 공백이 하
 
 ### 실행 화면 예시
 
-<img src="/img/3-1.png" width="60%" height="60%">
+<img src="/img/3-1-2.png" width="60%" height="60%">
+<img src="/img/3-1-3.png" width="60%" height="60%">
 
 ### 코드
 ```c
 #include <stdio.h>
 
-#define BUFSIZE 1024
-
-int main(void)
+void print_day(int day) //요일과 날짜를 출력해주는 함수
 {
-    char line[BUFSIZE];
+    int result = day % 7;
 
-    while (fgets(line, BUFSIZE, stdin) != NULL) {
-        int words = 0, letters = 0;
-        int i = 0;
-        while (line[i] != '\n') {
-            if ((i == 0 && line[i] != ' ') ||
-                (i > 0 && line[i-1] == ' ' && line[i] != ' ')) //단어의 수는 공백을 기준으로 나눕니다.
-                words++;
-            if (line[i] != ' ') letters++; //문자의 수는 공백이 아닌 것을 기준으로 나눕니다.
-            i++;
-        }
-        printf("%d %d\n", words, letters);
+    switch (result)
+    {
+        case 1:
+            printf("Sun: %d\n",day);
+            break;
+        case 2:
+            printf("Mon: %d\n",day);
+            break;
+        case 3:
+            printf("Tue: %d\n",day);
+            break;
+        case 4:
+            printf("Wed: %d\n",day);
+            break;
+        case 5:
+            printf("Thu: %d\n",day);
+            break;
+        case 6:
+            printf("Fri: %d\n",day);
+            break;
+        case 0:
+            printf("Sat: %d\n",day);
+            break;
     }
-    return 0;
+}
+
+
+int main() {
+    int tCase, day, poli, i, j, lost, k, p, r; //tCase = 테스트케이스 저장 변수, day = 전체 날짜 수, poli = 정당의 수, lost = 총 휴업일
+    int buf[1024];
+    lost = 0;
+    p = 0;
+    scanf("%d",&tCase);
+
+
+
+    while(tCase--){
+        scanf("%d",&day);
+        scanf("%d",&poli);
+
+
+        int hartal[poli];
+        
+        for(i=0; i<poli; i++){
+            scanf("%d",&hartal[i]);
+        }
+
+        for(j=1; j<day+1; j++){ //날짜는 1부터 시작하기 때문에 1~day만큼 루프를 돈다.
+            r = 0;
+            for(k=0; k<poli; k++){ //정당의 수 만큼 루프를 돈다.
+                if(j%hartal[k]==0){ //해당 정당의 휴업일일때,
+                    if(!((j%7==1 || j%7==0) || (j%7==4))){ //일요일, 토요일, 수요일은 동맹휴업을 하지 않기로 하였음.
+                        r++; //해당 정당 카운트
+                        if (r >= (poli+1)/2) //해당 정당 수가 과반수로 정해지면
+                        {
+                            lost++; //쉬는날로 카운트
+                            buf[p++]=j; //요일과 날짜를 출력해주기 위해 해당 날짜를 버퍼에 저장
+                            r = 0;
+                            break; //이미 정당의 수가 과반수를 넘겨 동맹휴업일로 지정되어 다음 정당을 고려하지 않기 위해 루프를 종료 시킨다.
+                        }
+                    }
+                }
+            }
+        }
+
+        printf("Lost: %d\n",lost); //총 동맹 휴업일 출력해준다.
+        for (i=0;i<p;i++)
+            print_day(buf[i]); //버퍼에 저장된 동맹휴업일의 요일과 날짜를 출력해준다.
+		if (tCase!=0)
+            printf("\n");
+        lost = 0; //테스트케이스만큼 수행하기 위해 변수를 초기화시켜준다.
+        p = 0;
+    }
+   return 0;
 }
 ```
 
-## 문제 1-2 : 10진수 대 16진수
+## 문제 2
 
 ### 문제설명
 
-> 10진수는 평범하게 표기하고, 16진수는 앞에 0x를 붙여서 표기한다. 각 줄에는 10진수 혹은 16진수 숫자가 씌여 있다.<br>
-10진수는 16진수로 바꾸고, 16진수는 10진수로 바꾸라. 모든 숫자는 양의 숫자이다 (0이나 음수 없음).
+> 1레스토랑에서 주문은 무조건 온 순서대로 받고, 식사를 마치는 것도 같은 순서대로라고 가정하자.<br>
+단, 이 레스토랑에는 자리가 몇 개밖에 없는데다, 자리가 꽉 차 있을 때 온 손님은 기다리지 않고 돌아가 버린다.<br>
 
-*16진수에서 ABCDE는 모두 대문자로 입출력.
+첫째 줄에는 레스토랑에 자리가 몇 개 있는지가 입력된다 (자리는 최대 26개).<br>
+둘째 줄에는 손님이 오는 것은 알파벳으로(A에서 Z까지), 식사를 마치는 것은 *로 표시되어 있다.<br>
+가장 마지막 손님이 들어온 뒤 아직 자리에 남아 식사를 하고 있는 손님들은 누구인지, 또한 빈자리는 어디인지 순서대로 출력하자. 이때 빈 자리는 #으로 표기한다.<br>
+자리에 앉을 때 무조건 앞쪽(맨 왼쪽)의 빈 자리부터 채워 앉는다.<br>
+
+예제에서는 A B C가 와서 자리에 앉고, D가 왔을 때 자리가 꽉 차 돌아갔으며, *가 한 번 있었을 때 A가 식사를 마쳤고, 그 다음 E가 왔고, *가 두 번 있었으니 B와 C가 식사를 마쳤으며, 그 다음 F가 왔고, *에서는 E가 식사를 마치고 마지막으로 G가 왔다. 따라서 아직 식사를 하고 있는 사람과 빈 의자는 순서대로 G F #가 된다.<br>
+
+입력: 자리상태<br>
+A: A # #<br>
+B: A B #<br>
+C: A B C<br>
+D: A B C<br>
+*: # B C<br>
+E: E B C<br>
+*: E # C<br>
+*: E # #<br>
+F: E F #<br>
+*: # F #<br>
+G: G F #<br>
 
 ### 실행 화면 예시
 
-<img src="/img/1-2.png" width="60%" height="60%">
+<img src="/img/3-2.png" width="60%" height="60%">
 
 ### 코드
 ```c
+/*FIFO 형태의 자료형을 가진다. 먼저 들어온사람이 먼저 식사를 마친다.*/
 #include <stdio.h>
 
-#define BUFSIZE 1024
+int main(){
+	int tables, i, k, min_index, key; //tables=테이블수, min_index=제일 먼저들어온 손님 저장, key=min_index의 초기값을 제어해주기 위한 변수.
+	char buf[1024];
 
-int main(void)
-{
-    char line[BUFSIZE];
-
-    while (fgets(line, BUFSIZE, stdin) != NULL) {
-        if (line[0] == '0') { //0으로 시작하면 16진수를 의미한다.
-            int hex = 0;
-            sscanf(line + 2, "%x", &hex); //sscanf를 통하여 문자열을 16진수로 바꾼다. line+2를 하는 이유는 0x부분을 건너뛴 숫자부분만 필요하기 때문이다.
-            printf("%d\n", hex); 			//%d를 통하여 16진수를 10진수로 변경하였다.
-        }
-        else {	//10진수일 경우
-            int dec = 0;
-            sscanf(line, "%d", &dec);	//마찬가지로 문자열을 int로 변경.
-            printf("0x%X\n", dec);		//%X로 16진수 형태로 표현해준다.
-        }
-    }
-    return 0;
+	scanf("%d",&tables);
+	getchar(); //개행 문자를 없애주기 위한 표현
+	char exist[tables];
+	for(i=0;i<tables;i++) //비어있는 테이블로 초기화
+		exist[i] = '#';
+	scanf("%[^\n]s",buf); //개행문자를 무시하기 위한 표현
+	i = 0;
+	min_index = 0;
+	while (buf[i])
+	{
+		if ('A'<=buf[i] && 'Z'>=buf[i])
+		{
+			for (k = 0;k < tables;k++)
+			{
+				if (exist[k] == '#') //비어있는 테이블이면 자리를 해당 문자로 채운다.
+				{
+					exist[k] = buf[i];
+					break; //비어있는 테이블을 발견하여 자리를 찾았으므로, 반복문 종료.
+				}
+			}
+			i++;
+			continue;
+		}
+		if (buf[i] == '*') //식사를 마쳤다면
+		{
+			key = 0;
+			for (k=0; k<tables; k++)
+			{
+				if (exist[k] != '#' && key == 0) //min_index의 초기값을 지정해주기 위해 key를 이용했다.
+				{	
+					min_index = k;
+					key = 1;
+				}
+				if (exist[k] != '#' && exist[min_index] > exist[k]) //먼저 들어온 손님의 문자가 더 작으므로 (ex)A가 B보다 일찍 들어왔다.)
+				{
+					min_index = k;
+				}
+			}
+			exist[min_index] = '#'; //일찍 들어온 손님이 식사를 마쳐서 비워줬다.
+			i++;
+			continue;
+		}
+		i++; //공백을 건너뛰기 위한 i++
+	}
+	for (k=0;k<tables;k++) //결과값 출력
+	{
+		if (k != tables - 1)
+			printf("%c ",exist[k]);
+		else
+			printf("%c\n",exist[k]);
+			
+	}
 }
 ```
 
-## 문제 1-3 : "3n+1 문제" 변형
+## 문제 3
 
 ### 문제설명
-> 짝수면 2로 나누고, 홀수면 3을 곱한 다음 1을 더하는 방식으로 수열을 만들 수 있다. 어떤 숫자로 시작하든지, 이 수열에 언젠가는 1이 등장한다고 수학자들은 추측하고 있다. 예를 들어 n=22라면
-22 11 34 17 52 26 13 40 20 10 5 16 8 4 2 1
-이런 수열이 만들어진다.<br><br>
-숫자 두 개가 있을 때, 첫번째 숫자로 시작한 수열에 두 번째 숫자가 포함되는지를 판단해 포함되면 Y, 그렇지 않으면 N을 출력하라.
+> 빨강 마을 티모는 협곡에서 버섯 농장 아르바이트를 한다. 농장에선 매 시간마다 티모에게 하나의 명령을 내린다.<br>
+티모가 수행하는 명령의 종류에는 R(뒤집기), B(가장 큰 버섯 버리기), S(가장 작은 버섯 버리기)가 있다. 다른 명령은 못본척한다.<br>
+R은 버섯 리스트의 순서를 뒤집는 명령, B는 버섯 리스트 중 크기가 가장 큰 버섯을 버리는 명령, S는 가장 작은 버섯을 버리는 명령이다. (단, 가장 큰 또는 가장 작은 버섯이 여러 개 있다면 가장 왼쪽에 있는 버섯을 버린다.)<br>
+
+> 리스트에 버섯이 존재하지 않을 경우에 명령이 내려진 경우 오류가 발생한다.<br>
+게으른 티모는 이 명령들을 한번에 모아서 처리하고 싶어한다.<br>
+예를 들어, "RBS"라는 명령은 R을 수행하고 B를 수행한 다음, 마지막으로 S를 수행하는 명령어다.<br>
+버섯 리스트의 초기값과 수행할 명령이 주어졌을 때, 최종 버섯 리스트를 출력하라.<br>
+만약, 오류가 난 경우에는 "No mushrooms!"를 출력하고, 리스트가 빈 경우에는 "Empty!"를 출력한다. 명령어가 올바르지 못한 경우 "Wrong Command!"를 출력한다.<br>
+
+------
+
+>입력<br>
+첫째 줄에 배열의 크기(버섯의 개수) N이 주어진다.(0 <= N <= 1,000)<br>
+둘째 줄에 배열에 넣을 수(버섯의 크기) Xi가 주어진다.(1 <= Xi <= 1,000,000)<br>
+셋째 줄에 수행할 명령어 p가 주어진다.(1 <= p <= 100,000)<br>
+<br>
+출력<br>
+각 테스트케이스에 대해서 입력으로 주어진 배열에 대한 최종 결과를 출력한다.<br>
 
 ### 실행 화면 예시
 
