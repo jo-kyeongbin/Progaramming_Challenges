@@ -16,7 +16,7 @@ __본 문제들은 교재에 없으며, 교재의 응용 문제로 공부에 많
 * [[3주차]자료구조2](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/3_week.md)
 * [[4주차]문자열1](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/4_week.md)
 * [[5주차]문자열2](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/5_week.md)
-
+* [[6주차]정렬](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/6_week.md)
 
 
 ## input파일 사용법
