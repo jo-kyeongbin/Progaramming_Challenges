@@ -17,6 +17,11 @@ __본 문제들은 교재에 없으며, 교재의 응용 문제로 공부에 많
 * [[4주차]문자열1](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/4_week.md)
 * [[5주차]문자열2](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/5_week.md)
 * [[6주차]정렬](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/6_week.md)
+* [[7주차]조합론](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/7_week.md)
+* [[9주차]백트래킹1](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/8_week.md)
+* [[10주차]백트래킹2](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/10_week.md)
+* [[11주차]그래프 순회](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/11_week.md)
+* [[12주차]그래프 알고리즘](https://github.com/jo-kyeongbin/Progaramming_Challenges/blob/main/doc/12_week.md)
 
 
 ## input파일 사용법
