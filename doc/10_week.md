@@ -30,6 +30,85 @@
 
 ### 코드
 ```c
+#include <stdio.h>
+#define	abs(x) (((x)<0)?-(x):(x))
+//10-1-1.input 3번 테스트케이스에 대해 잘못된 값을 출력하고, 해결하지 못하였다..
+int arrsum(int *a, int alen) //해당 그룹의 원소(무게)의 합을 출력해주는 함수
+{
+    int i;
+    int result=0;
+    for(i=0;i<alen;i++) result = result+a[i];
+    return result;
+}
+
+void swap(int *a, int *b) //원소의 자리를 바꿔주는 함수
+{
+    int temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void tug(int *a, int *b, int alen, int blen)
+{
+    if (arrsum(a,alen)==arrsum(b,blen)) //몸무게 총합이 같을 경우 출력
+    {
+        printf("%d\n", arrsum(a,alen));
+        printf("%d\n", arrsum(b,blen));
+        return;
+    }
+    int tdiff;
+    tdiff = arrsum(a,alen)-arrsum(b,blen);
+    int i,j;
+    for(i=0;i<alen;i++)
+    {
+        for(j=0;j<blen;j++)
+        {
+            if(abs(2*(b[j]-a[i])+tdiff)<abs(tdiff)) //해당 조건에 해당되는 a원소, b원소가 없다면 아래 if문에 의해 정답 출력.
+            {
+                swap(&a[i],&b[j]);
+                tug(a,b,alen,blen);
+                return;
+            }
+        }
+    }
+    if (arrsum(a,alen) > arrsum(b,blen)) //몸무게 총합이 다를 경우 작은 것부터 출력
+        printf("%d %d\n",arrsum(b,blen), arrsum(a,alen));
+    else
+    {
+        printf("%d %d\n",arrsum(a,alen), arrsum(b,blen));
+    }
+    return;
+}
+
+int main()
+{
+    int n,i,tcase;
+    int a[50], b[50];
+    scanf("%d",&tcase);
+    getchar();
+    while(tcase>0)
+    {
+        scanf("%d", &n);
+        getchar();
+        if (n%2==0) //짝수일 경우 반씩 나눠가진다.
+        {
+            for(i=0;i<n/2;i++) scanf("%d", &a[i]);
+            for(i=0;i<n/2;i++) scanf("%d", &b[i]);
+            tug(a,b,n/2,n/2);
+        }
+        else //홀수일 경우 a의 원소가 b원소보다 1개 더 많다.
+        {
+            for(i=0;i<(n+1)/2;i++) scanf("%d", &a[i]);
+            for(i=0;i<(n-1)/2;i++) scanf("%d", &b[i]);
+            tug(a,b,(n+1)/2,(n-1)/2);
+        }
+        tcase--;
+        if(tcase>0)
+            printf("\n");
+    }
+    return 0;
+}
 
 ```
 
@@ -50,7 +129,40 @@ bbbccc가 bbcbcc보다 먼저 출력하라는 의미이다.<br>
 
 ### 코드
 ```c
+#include <stdio.h>
+//카탈란 수 알고리즘을 이용하여 해결 b가 ( 이고 c가 )로 생각하면 문제이해에 도움이 된다.
+void solution(char *buf,int n, int b, int c);
 
+int main()
+{
+	int n;
+	int i;
+	char buf[25];
+	while(scanf("%d",&n)!=EOF)
+	{
+		solution(buf,0,n,0);
+	}
+}
+
+void solution(char *buf,int n, int b, int c)
+{
+	if (b == 0 && c == 0) //출력조건
+	{
+		buf[n]=0;
+		printf("%s\n",buf);
+		return;
+	}
+	if (b > 0) //b if문이 더 먼저 있어서 box를 우선시 출력.
+	{
+		buf[n] = 'b';
+		solution(buf, n+1, b-1, c+1);
+	}
+	if (c > 0) //dfs 방식으로 위에서 출력조건이 만족되어 출력된 후 바로 직전부터 c로 채우면서 접근.
+	{
+		buf[n] = 'c';
+		solution(buf,n+1,b,c-1);
+	}
+}
 ```
 
 ## 문제 3
@@ -73,5 +185,108 @@ NxN 크기로 주어진 지도에서 1로 표시된 부분이 다이아몬드가
 
 ### 코드
 ```c
+#include <stdio.h>
+
+int n; //맵의 크기(nxn)
+int map[10][10]; //맵
+int key; //영역을 경계짓는 변수
+
+const int EXIST = -1; //채울 수 있는 공간, 다이야가 있는 공간
+const int NONE = 0; // 채우지 못하는 공간, 다이야가 없는 공간
+
+void print_map()
+{
+	int i,j;
+	for (i=0;i<n;i++)
+	{
+		for(j=0;j<n;j++)
+		{
+			printf("%d ",map[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int exist(void)
+{
+	int i, j;
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n;j++)
+			if(map[i][j] == EXIST) //채울 공간이 하나라도 있으면 return 1
+				return 1;
+	}
+	return 0; //채울 공간이 하나도 없으면 return 0
+}
+
+int find(int i, int j, int value) //영역을 나눠서 값을 채워주는 함수
+{
+	if(i<0 || j<0 || i>=n || j>=n) { //인덱스를 넘는 예외처리, value를 다 채울 경우 맵을 순회하다가 인덱스를 넘겨 find가 종료된다.
+    	return 0;
+    }
+	else if(exist() == 0){ //더이상 채울 곳이 없으면 출력
+		print_map();
+        return 1; //모든 공간을 다 채우면 return 1을 하여 더이상의 재귀호출을 막는다.
+    }
+	else if (map[i][j] < value && map[i][j] >= 0 && key != 1) //value보다 작으면서, exist가 아니라면
+	{
+		key = 0;
+		while(i<n)
+		{
+			while(j<n)
+			{
+				if(map[i][j] < value && map[i][j] >= 0) //exist가 나올 때까지 index 증가.
+					j++;
+				if(map[i][j] == EXIST) //exist를 찾으면 해당 영역을 value로 채우면 된다.
+				{
+					key = 1;
+					break;
+				}
+			}
+			if (key == 1)
+				break;
+			i++;
+			j=0;
+		}
+	} //위에서 i,j값을 찾아주고 그 주변에서 값을 채워주는 형태, key값이 1이기 때문에 위의 else if문은 더이상 수행되지 않는다.
+	if(map[i][j] == EXIST){ //채울 수 있는 공간이면
+		key = 1;
+		map[i][j] = value; //값을 채우고, find 재귀를 수행한다.(방향 순서는 상관없음)
+        if(find(i, j+1,value) || find(i+1, j,value)
+		|| find(i, j-1, value) || find(i-1,j,value)) {
+			return 1;
+    	}
+    }
+	return 0;
+}
+
+int main()
+{
+	int i,j,k;
+	char buf[1024];
+	while(scanf("%d",&n)!=EOF)
+	{
+		getchar();
+		for(i=0;i<n;i++)
+		{
+			k = 0;
+			fgets(buf,1024,stdin);
+			for(j=0;j<n;j++)
+			{
+				map[i][j] = buf[k]-'0';
+				if (map[i][j] == 1)
+					map[i][j] = -1; //1일 경우 exist로 설정
+				k+=2;
+			}
+		}
+		i = 1;
+		while (exist()!=0) //더이상 채울 공간이 없을 때까지 value를 증가시키며 영역을 채움.
+		{
+   			key = 0;
+			find(0,0,i);
+			i++;
+		}
+	}
+}
 
 ```
