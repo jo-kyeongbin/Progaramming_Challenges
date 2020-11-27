@@ -18,7 +18,56 @@ N개의 Queen문제는 대칭성이 존재한다. 해결할 때 테이블이 좌
 
 ### 코드
 ```c
+#include <stdio.h>
+#define ABS(x)  (((x)<0)?-(x):(x)) //절대값 매크로 함수
 
+int N;
+int board[10]; //각 행에서의 어느 열에 존재하는 지 여부를 저장해주는 변수. (값: 열 위치)
+
+int possible(int row) { //해당 자리에 퀸이 올 수 있는지 여부를 판단해주는 함수
+    for (int i = 0; i < row; i++) {
+        if (board[i] == board[row] || (row - i) == ABS(board[i] - board[row])) { //같은 열에 있거나 대각선에 존재하면 return 0
+            return 0;
+        }
+    } 
+    return 1; //조건을 만족하면 return 1
+}
+
+void setQueen(int row) { 
+    int i;
+    int j;
+    if (row == N) { //모든 퀸의 위치를 정하였을 때 출력해준다.
+        for(i=0;i<N;i++)
+        {
+            for(j=0;j<N;j++)
+            {
+                if(j==board[i])
+                    printf("Q ");
+                else
+                    printf("* ");
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    else { //dfs이다. 우선 조건에 맞는부분을 출력해주고,
+        for (int col = 0; col < N; col++) {//바로 직전 단계부터 살펴보아 for문이 다시 수행되어 조건을 만족하는 부분을 찾는다.
+            board[row] = col; //우선 퀸의 위치를 정한다.
+
+            if (possible(row)) {  //조건에 맞는 지 확인하고, 충족한다면
+                setQueen(row + 1); //다음 행을 고려한다.
+            }
+        }
+    }
+}
+
+int main(void) {
+    while (scanf("%d", &N)!=EOF)
+    {
+        setQueen(0);
+    }
+    return 0;
+}
 ```
 
 ## 문제 2
@@ -47,7 +96,126 @@ N개의 Queen문제는 대칭성이 존재한다. 해결할 때 테이블이 좌
 
 ### 코드
 ```c
+#include <stdio.h>
 
+char answer[11];
+char correct[11];
+char temp[11];
+char buf[1024];
+int count;
+int N;
+
+int my_strcmp(char *s1, char *s2) //두 문자열을 비교해주는 함수, 완전히 같으면 return 1 하나라도 다르면 return 0
+{
+	int i=0,j=0;
+	while(s1[i] && s2[j])
+	{
+		if (s1[i] == s2[j])
+		{	
+			i++;
+			j++;
+		}
+		else
+			return 0;
+	}
+	return 1;
+}
+
+void my_strcpy(char *s1, char *s2) //문자열 s1에 문자열 s2의 내용을 복사하고 널을 붙인다.
+{
+	int i=0;
+	while(s2[i])
+	{
+		s1[i] = s2[i];
+		i++;
+	}
+	s1[i] = '\0';
+}
+
+void find(int pos)
+{
+	int i;
+	if (pos==N) //재귀함수 호출이 종료되는 부분, pos가 입력값의 길이가 되었을 경우.
+	{
+		for(i=0;i<N;i++) //answer를 문제에서 요구하는 순열대로 구현하여 temp에 저장한다. 즉 answer는 이전 상태.
+		{
+			if (i==0) //처음부분(처음부분과 끝부분은 연결되어 있으므로 따로 분리하여 처리)
+			{
+				if (answer[N-1] == answer[1])
+					temp[i] = answer[i];
+				else
+				{
+					if (answer[i] == '0')
+						temp[i] = '1';
+					else
+						temp[i] = '0';
+				}
+			}
+			else if(i==N-1) //끝부분
+			{
+				if (answer[N-2] == answer[0])
+					temp[i] = answer[i];
+				else
+				{
+					if (answer[i] == '0')
+						temp[i] = '1';
+					else
+						temp[i] = '0';
+				}
+			}
+			else // 그 외 중간부분
+			{
+				if (answer[i-1] == answer[i+1])
+					temp[i] = answer[i];
+				else
+				{
+					if (answer[i] == '0')
+						temp[i] = '1';
+					else
+						temp[i] = '0';
+				}
+			}
+		}
+		answer[N] = '\0';
+		temp[N] = '\0';
+		if(my_strcmp(temp,buf)==1) //입력값과 temp가 같다면
+		{
+			count++; //정답 횟수 증가
+			my_strcpy(correct,answer); //정답을 따로 저장한다.
+		}
+	}
+	else{ //해당 length를 충족하는 모든 경우의 수를 순회
+		answer[pos] = '0'; //해당 부분이 0일 때 재귀호출
+		find(pos+1);
+		answer[pos] = '1'; //해당 부분이 1일 때 재귀호출
+		find(pos+1);
+	}
+}
+
+int my_strlen(char *buf) //문자열의 길이를 측정하는 함수
+{
+	int i = 0;
+	while(buf[i]!='\n' && buf[i])
+		i++;
+	return(i);
+}
+
+int main()
+{
+	while(fgets(buf,1024,stdin)!=NULL)
+	{
+		N = my_strlen(buf);
+		buf[N] = '\0';
+		count = 0;
+		find(0);
+		if (count == 1) //이전 상태가 하나일 경우 답을 출력
+			printf("%s\n",correct);
+		else if(count > 1) //이전 상태가 여러개면 multiple
+			printf("multiple\n");
+		else //이전 상태가 존재하지 않으면 zero
+			printf("zero\n");
+	}
+}
 ```
 
 ## 문제 3
@@ -76,5 +244,84 @@ N개의 Queen문제는 대칭성이 존재한다. 해결할 때 테이블이 좌
 
 ### 코드
 ```c
+#include <stdio.h>
 
+int count;
+int row, col; //행, 열
+int map[10][10]; //맵
+
+const int PATHWAY = 1; //갈 수 있는 곳
+const int BLOCKED = 4; //막혀있는 곳
+const int PATH = 3; //지나간 곳
+const int DST = 2; //목적지
+
+void print_map() //정답(맵)을 출력해주는 함수
+{
+	int i,j,count;
+	count = 0;
+	for (i=0;i<row;i++)
+	{
+		for(j=0;j<col;j++)
+		{
+			if (map[i][j]==PATH)
+			{
+				printf("1 ");
+				count++;
+			}
+			else if(map[i][j] == DST)
+			{
+				printf("%d ",DST);
+				count++;
+			}
+			else
+				printf("0 ");
+		}
+		printf("\n");
+	}
+	printf("%d\n",count); //도착지를 포함한 경로의 수를 출력
+}
+
+
+void find(int i, int j)
+{
+	if(i<0 || j<0 || i>=row || j>=col) return ; //인덱스를 벗어나는 부분을 예외처리
+	else if(map[i][j] != PATHWAY && map[i][j] != 2) return ; //도착지가 아니면서 갈 수 없는 길이면 제외
+    else if(map[i][j]==DST) { //목적지에 도달하면 정답 출력
+		if (count > 0) //결과가 여러개이면
+			printf("\n");
+		print_map();
+		count++;
+    }else {
+        map[i][j] = PATH; //해당 길을 지나온 길로 표시
+		//문제에서 요구한대로 순회 (우측-하단-좌측-상단)
+        find(i, j+1);
+		find(i+1, j);
+		find(i, j-1);
+		find(i-1, j);
+	if (map[i][j]==PATH) //dfs로 바로 직전의 결과를 다시 안간 것으로 처리하여 다른 길을 찾아본다.
+		map[i][j] = PATHWAY;
+    }
+}
+
+int main()
+{
+	int i,j,k;
+	char buf[1024];
+	while(scanf("%d %d",&row,&col)!=EOF)
+	{
+		getchar();
+		for(i=0;i<row;i++)
+		{
+			k = 0;
+			fgets(buf,1024,stdin);
+			for(j=0;j<col;j++)
+			{
+				map[i][j] = buf[k]-'0';
+				k+=2; //공백이 존재하여 짝수 인덱스만 맵에 저장.
+			}
+		}
+		count = 0; //출력결과가 여러개이면 공백을 추가하기 위한 변수
+   		find(0,0);
+	}
+}
 ```
