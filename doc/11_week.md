@@ -30,6 +30,75 @@ N은 10 이하의 정수이다. 만약, 인접 정점을 다른색으로 칠하�
 
 ### 코드
 ```c
+#include <stdbool.h>
+#include <stdio.h>
+
+int V;
+int key;
+void printSolution(int color[]);
+
+bool isSafe(bool graph[10][10], int color[])
+{
+	for (int i = 0; i < V; i++)
+		for (int j = i + 1; j < V; j++)
+			if (graph[i][j] && color[j] == color[i]) //그래프가 인접해 있으면서, 색깔이 같으면 false
+				return false;
+	return true; //해당 경우가 없으면 true
+}
+
+bool graphColoring(bool graph[][10], int m, int i,int color[10])
+{
+	if (i == V) { //재귀함수 종료 부분, i와 정점의 개수가 같다면
+		if (isSafe(graph, color)) {
+			key = 1; //정답을 출력하였다면 key=1
+			printSolution(color); //컬러 출력
+		}
+		return false;
+	}
+	for (int j = 1; j <= m; j++) {
+		color[i] = j;
+		graphColoring(graph, m, i + 1, color); //dfs로 재귀를 호출한다.
+		color[i] = 0; //dfs를 위해 다시 초기화
+	}
+	return false;
+}
+
+void printSolution(int color[]) //컬러를 출력해주는 함수
+{
+    for (int i = 0; i < V-1; i++)
+        printf("%d ", color[i]);
+    printf("%d \n",color[V-1]);
+}
+
+int main()
+{
+	bool graph[10][10];
+    int m;
+    int i,j,k;
+	char buf[1024];
+	while(scanf("%d %d",&V,&m)!=EOF)
+	{
+		getchar();
+		for(i=0;i<V;i++)
+		{
+			k = 0;
+			fgets(buf,1024,stdin);
+			for(j=0;j<V;j++)
+			{
+				graph[i][j] = buf[k]-'0';
+				k+=2;
+			}
+		}
+		int color[V];
+		for (int i = 0; i < V; i++)
+			color[i] = 0;
+		key = 0;
+		graphColoring(graph, m, 0, color);
+		if (key == 0) //정답이 없다면
+			printf("NONE\n");
+	}
+	return 0;
+}
 
 ```
 
@@ -54,6 +123,65 @@ N은 10 이하의 정수이다. 만약, 인접 정점을 다른색으로 칠하�
 
 ### 코드
 ```c
+#include <stdio.h>
+
+int n, count;
+int map[10][10];
+int x[100], y[100], l[100];
+
+void save(int i, int j, int k) //save()를 통하여 방향을 정한다.
+{ 
+	x[count] = i; //x좌표 저장
+	y[count] = j; //y좌표 저장
+	l[count] = k; //경로의 개수를 의미하는 변수
+	count++; //save()가 호출될 때마다 증가, 1이 연달아 붙어 있다면 pos보다 항상 큰 값을 가진다.
+}
+
+void bfs(int i, int j)
+{
+	int pos = 0;
+	save(i, j, 1); //count가 기본적으로 1을 가진다.
+
+	while (pos < count && (x[pos] != n - 1 || y[pos] != n - 1)) //x와 y가 n,n(끝)에 도달하면 종료
+	{ //상하좌우 순서로 맵을 순회하면서 map이 1인 부분을 저장한다.
+		map[y[pos]][x[pos]] = 0;//현재 위치를 방문한 것으로 표시한다. 또한 save()로 인하여 방향이 정해짐.
+		if (y[pos] > 0 && map[y[pos] - 1][x[pos]] == 1) //상
+			save(x[pos], y[pos] - 1, l[pos] + 1);
+		if (y[pos] < n - 1 && map[y[pos] + 1][x[pos]] == 1) //하
+			save(x[pos], y[pos] + 1, l[pos] + 1);
+		if (x[pos] > 0 && map[y[pos]][x[pos] - 1] == 1) //좌
+			save(x[pos] - 1, y[pos], l[pos] + 1);
+		if (x[pos] < n - 1 && map[y[pos]][x[pos] + 1] == 1) //우
+			save(x[pos] + 1, y[pos], l[pos] + 1);
+		pos++;
+	}
+	if (pos < count) //while문을 탈출하였을 경우 경로 수(정답) 출력
+		printf("%d\n", l[pos]);
+}
+
+int main()
+{
+	int i,j,k,row,col;
+	char buf[1024];
+	while(scanf("%d",&n)!=EOF)
+	{
+		getchar();
+		row = n;
+		col = n;
+		for(i=0;i<row;i++)
+		{
+			k = 0;
+			fgets(buf,1024,stdin);
+			for(j=0;j<col;j++)
+			{
+				map[i][j] = buf[k]-'0';
+				k+=2;
+			}
+		}
+   		bfs(0,0);
+	}
+	return 0;
+}
 
 ```
 
@@ -86,5 +214,86 @@ N은 10 이하의 정수이다. 만약, 인접 정점을 다른색으로 칠하�
 
 ### 코드
 ```c
+#include <stdio.h> 
+
+int size; //집의 수
+int start; //시작 인덱스
+int success, //정답의 존재 여부
+    v[10]; //방문한 코스 저장
+int visited[11]; //방문했는지의 여부 1 아니면 0
+int map[11][11]; // 맵 저장
+
+
+void add(int s, int e) //방향성 없는 그래프여서 (x,y), (y,x)에 같은 값 입력
+{
+	map[s][e] = 1;
+	map[e][s] = 1;
+}
+
+void visit(int i, int r) 
+{ 
+    int k; 
+
+    if(r==0 && i==start)  //재귀 종료 부분, 모든 경로를 다 돌고, 다시 시작점으로 왔을 경우
+    {
+		v[r]=i;
+        for(k=size;k>0;k--) //v를 역순으로 저장하였기에 역순으로 출력
+			printf("%d ",v[k]);
+		printf("%d\n",v[k]);
+		success=1; //정답이 있음을 표시.
+    }
+    else if(r>0)
+    {
+        for(k=1;k<=size;k++) //인덱스를 1부터 시작 편의를 위해 크기를 하나씩 늘림.
+        { 
+            if(map[i][k]==1 && visited[i]==0) //연결이 돼있고, 방문이 돼있지 않으면
+            {
+				v[r]=i;	//정답 값으로 저장
+				visited[i] = 1; //방문한 것으로 설정
+                map[i][k]=0;    map[k][i]=0; //이미 방문하여 방문하지 못하도록 0으로 설정
+                r--; //정답을 저장하였으므로 인덱스 감소
+                visit(k,r); //재귀호출
+				visited[i] = 0; //dfs를 위해 원래값으로 초기화
+				map[i][k]=1;    map[k][i]=1;
+				r++;
+            }
+        }
+    }
+} 
+
+void map_init()
+{
+	int i,j;
+	for(i=0;i<11;i++) //1부터 시작해도 된다. 1부터 사용할 것이기에
+	{
+		for(j=0;j<11;j++) //1부터 시작해도 된다.
+			map[i][j] = 0;
+	}
+}
+
+
+int main() 
+{ 
+	int n,a,b;
+	int r; //r을 쓰지 않고 size를 바로 넣어줘도 된다.
+	while(scanf("%d %d %d",&size,&n,&start)!=EOF)
+	{
+		getchar();
+		map_init(); //맵을 0으로 초기화
+		while(n>0)
+		{
+			scanf("%d %d",&a,&b);
+			getchar();
+			add(a,b);
+			n--;
+		}
+		success=0; r=size;
+		for (n=0;n<11;n++) //방문 초기화
+			visited[n] = 0;
+    	visit(start,r);
+    	if(success==0) //정답이 없으면 0 출력
+        	printf("0\n");
+	}
+} 
 
 ```
