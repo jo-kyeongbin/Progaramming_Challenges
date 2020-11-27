@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-
 int V;
 int key;
 void printSolution(int color[]);
