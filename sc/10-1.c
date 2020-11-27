@@ -1,70 +1,79 @@
-#include <stdbool.h>
 #include <stdio.h>
+#define	abs(x) (((x)<0)?-(x):(x))
 
-
-int V;
-int key;
-void printSolution(int color[]);
-
-bool isSafe(bool graph[10][10], int color[])
+int arrsum(int *a, int alen)
 {
-	for (int i = 0; i < V; i++)
-		for (int j = i + 1; j < V; j++)
-			if (graph[i][j] && color[j] == color[i])
-				return false;
-	return true;
+    int i;
+    int result=0;
+    for(i=0;i<alen;i++) result = result+a[i];
+    return result;
 }
 
-bool graphColoring(bool graph[][10], int m, int i,int color[10])
+void swap(int *a, int *b)
 {
-	if (i == V) {
-		if (isSafe(graph, color)) {
-			key = 1;
-			printSolution(color);
-		}
-		return false;
-	}
-	for (int j = 1; j <= m; j++) {
-		color[i] = j;
-		graphColoring(graph, m, i + 1, color);
-		color[i] = 0;
-	}
-
-	return false;
+    int temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
 }
-void printSolution(int color[])
+
+void tug(int *a, int *b, int alen, int blen)
 {
-    for (int i = 0; i < V-1; i++)
-        printf("%d ", color[i]);
-    printf("%d \n",color[V-1]);
+    if (arrsum(a,alen)==arrsum(b,blen))
+    {
+        printf("%d\n", arrsum(a,alen));
+        printf("%d\n", arrsum(b,blen));
+        return;
+    }
+    int tdiff;
+    tdiff = arrsum(a,alen)-arrsum(b,blen);
+    int i,j;
+    for(i=0;i<alen;i++)
+    {
+        for(j=0;j<blen;j++)
+        {
+            if(abs(2*(b[j]-a[i])+tdiff)<abs(tdiff))
+            {
+                swap(&a[i],&b[j]);
+                tug(a,b,alen,blen);
+                return;
+            }
+        }
+    }
+    if (arrsum(a,alen) > arrsum(b,blen))
+        printf("%d %d\n",arrsum(b,blen), arrsum(a,alen));
+    else
+    {
+        printf("%d %d\n",arrsum(a,alen), arrsum(b,blen));
+    }
+    return;
 }
 
 int main()
 {
-	bool graph[10][10];
-    int m;
-    int i,j,k;
-	char buf[1024];
-	while(scanf("%d %d",&V,&m)!=EOF)
-	{
-		getchar();
-		for(i=0;i<V;i++)
-		{
-			k = 0;
-			fgets(buf,1024,stdin);
-			for(j=0;j<V;j++)
-			{
-				graph[i][j] = buf[k]-'0';
-				k+=2;
-			}
-		}
-		int color[V];
-		for (int i = 0; i < V; i++)
-			color[i] = 0;
-		key = 0;
-		graphColoring(graph, m, 0, color);
-		if (key == 0)
-			printf("NONE\n");
-	}
-	return 0;
+    int n,i,tcase;
+    int a[50], b[50];
+    scanf("%d",&tcase);
+    getchar();
+    while(tcase>0)
+    {
+        scanf("%d", &n);
+        getchar();
+        if (n%2==0)
+        {
+            for(i=0;i<n/2;i++) scanf("%d", &a[i]);
+            for(i=0;i<n/2;i++) scanf("%d", &b[i]);
+            tug(a,b,n/2,n/2);
+        }
+        else
+        {
+            for(i=0;i<(n+1)/2;i++) scanf("%d", &a[i]);
+            for(i=0;i<(n-1)/2;i++) scanf("%d", &b[i]);
+            tug(a,b,(n+1)/2,(n-1)/2);
+        }
+        tcase--;
+        if(tcase>0)
+            printf("\n");
+    }
+    return 0;
 }

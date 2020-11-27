@@ -1,79 +1,50 @@
 #include <stdio.h>
-#define	abs(x) (((x)<0)?-(x):(x))
+#define ABS(x)  (((x)<0)?-(x):(x)) //절대값 매크로 함수
 
-int arrsum(int *a, int alen)
-{
+int N;
+int board[10]; //각 행에서의 어느 열에 존재하는 지 여부를 저장해주는 변수. (값: 열 위치)
+
+int possible(int row) { //해당 자리에 퀸이 올 수 있는지 여부를 판단해주는 함수
+    for (int i = 0; i < row; i++) {
+        if (board[i] == board[row] || (row - i) == ABS(board[i] - board[row])) { //같은 열에 있거나 대각선에 존재하면 return 0
+            return 0;
+        }
+    } 
+    return 1; //조건을 만족하면 return 1
+}
+
+void setQueen(int row) { 
     int i;
-    int result=0;
-    for(i=0;i<alen;i++) result = result+a[i];
-    return result;
-}
-
-void swap(int *a, int *b)
-{
-    int temp;
-    temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-void tug(int *a, int *b, int alen, int blen)
-{
-    if (arrsum(a,alen)==arrsum(b,blen))
-    {
-        printf("%d\n", arrsum(a,alen));
-        printf("%d\n", arrsum(b,blen));
-        return;
-    }
-    int tdiff;
-    tdiff = arrsum(a,alen)-arrsum(b,blen);
-    int i,j;
-    for(i=0;i<alen;i++)
-    {
-        for(j=0;j<blen;j++)
+    int j;
+    if (row == N) { //모든 퀸의 위치를 정하였을 때 출력해준다.
+        for(i=0;i<N;i++)
         {
-            if(abs(2*(b[j]-a[i])+tdiff)<abs(tdiff))
+            for(j=0;j<N;j++)
             {
-                swap(&a[i],&b[j]);
-                tug(a,b,alen,blen);
-                return;
+                if(j==board[i])
+                    printf("Q ");
+                else
+                    printf("* ");
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    else { //dfs이다. 우선 조건에 맞는부분을 출력해주고,
+        for (int col = 0; col < N; col++) {//바로 직전 단계부터 살펴보아 for문이 다시 수행되어 조건을 만족하는 부분을 찾는다.
+            board[row] = col; //우선 퀸의 위치를 정한다.
+
+            if (possible(row)) {  //조건에 맞는 지 확인하고, 충족한다면
+                setQueen(row + 1); //다음 행을 고려한다.
             }
         }
     }
-    if (arrsum(a,alen) > arrsum(b,blen))
-        printf("%d %d\n",arrsum(b,blen), arrsum(a,alen));
-    else
-    {
-        printf("%d %d\n",arrsum(a,alen), arrsum(b,blen));
-    }
-    return;
 }
 
-int main()
-{
-    int n,i,tcase;
-    int a[50], b[50];
-    scanf("%d",&tcase);
-    getchar();
-    while(tcase>0)
+int main(void) {
+    while (scanf("%d", &N)!=EOF)
     {
-        scanf("%d", &n);
-        getchar();
-        if (n%2==0)
-        {
-            for(i=0;i<n/2;i++) scanf("%d", &a[i]);
-            for(i=0;i<n/2;i++) scanf("%d", &b[i]);
-            tug(a,b,n/2,n/2);
-        }
-        else
-        {
-            for(i=0;i<(n+1)/2;i++) scanf("%d", &a[i]);
-            for(i=0;i<(n-1)/2;i++) scanf("%d", &b[i]);
-            tug(a,b,(n+1)/2,(n-1)/2);
-        }
-        tcase--;
-        if(tcase>0)
-            printf("\n");
+        setQueen(0);
     }
     return 0;
 }

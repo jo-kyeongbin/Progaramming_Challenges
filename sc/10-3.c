@@ -1,82 +1,103 @@
-#include <stdio.h> 
+#include <stdio.h>
 
-int size;
-int start;
-int success,
-    v[10];
-int visited[11];
+int n;
+int map[10][10];
+int key;
 
-int map[11][11];
+const int EXIST = -1;
+const int NONE = 0;
 
-
-void add(int s, int e)
-{
-	map[s][e] = 1;
-	map[e][s] = 1;
-}
-
-void visit(int i, int r) 
-{ 
-    int k; 
-
-    if(r==0 && i==start) 
-    {
-		v[r]=i;
-        for(k=size;k>0;k--)
-			printf("%d ",v[k]);
-		printf("%d\n",v[k]);
-		success=1;
-    }
-    else if(r>0)
-    {
-        for(k=1;k<=size;k++)
-        { 
-            if(map[i][k]==1 && visited[i]==0)
-            {
-				v[r]=i;
-				visited[i] = 1;
-                map[i][k]=0;    map[k][i]=0;
-                r--;
-                visit(k,r);
-				visited[i] = 0;
-				map[i][k]=1;    map[k][i]=1;
-				r++;
-            }
-        }
-    }
-} 
-
-void map_init()
+void print_map()
 {
 	int i,j;
-	for(i=0;i<11;i++)
+	for (i=0;i<n;i++)
 	{
-		for(j=0;j<11;j++)
-			map[i][j] = 0;
+		for(j=0;j<n;j++)
+		{
+			printf("%d ",map[i][j]);
+		}
+		printf("\n");
 	}
 }
 
+int exist(void)
+{
+	int i, j;
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n;j++)
+			if(map[i][j] == EXIST)
+				return 1;
+	}
+	return 0;
+}
 
-int main() 
-{ 
-	int n,a,b;
-	int r;
-	while(scanf("%d %d %d",&size,&n,&start)!=EOF)
+int find(int i, int j, int value)
+{
+	if(i<0 || j<0 || i>=n || j>=n) {
+    	return 0;
+    }
+	else if(exist() == 0){
+		print_map();
+        return 1;
+    }
+	else if (map[i][j] < value && map[i][j] >= 0 && key != 1)
+	{
+		key = 0;
+		while(i<n)
+		{
+			while(j<n)
+			{
+				if(map[i][j] < value && map[i][j] >= 0)
+					j++;
+				if(map[i][j] == EXIST)
+				{
+					key = 1;
+					break;
+				}
+			}
+			if (key == 1)
+				break;
+			i++;
+			j=0;
+		}
+	}
+	if(map[i][j] == EXIST){
+		key = 1;
+		map[i][j] = value;
+        if(find(i, j+1,value) || find(i+1, j,value)
+		|| find(i, j-1, value) || find(i-1,j,value)) {
+			return 1;
+    	}
+    }
+	return 0;
+}
+
+int main()
+{
+	int i,j,k;
+	char buf[1024];
+	while(scanf("%d",&n)!=EOF)
 	{
 		getchar();
-		map_init();
-		while(n>0)
+		for(i=0;i<n;i++)
 		{
-			scanf("%d %d",&a,&b);
-			getchar();
-			add(a,b);
-			n--;
+			k = 0;
+			fgets(buf,1024,stdin);
+			for(j=0;j<n;j++)
+			{
+				map[i][j] = buf[k]-'0';
+				if (map[i][j] == 1)
+					map[i][j] = -1;
+				k+=2;
+			}
 		}
-		success=0; r=size;
-		for (n=0;n<11;n++)
-			visited[n] = 0;
-    	visit(start,r);
-    	if(success==0)
-        	printf("0\n");
+		i = 1;
+		while (exist()!=0)
+		{
+   			key = 0;
+			find(0,0,i);
+			i++;
+		}
 	}
-} 
+}

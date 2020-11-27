@@ -1,97 +1,61 @@
 #include <stdio.h>
-#include <stdbool.h>
-#define NONE 333
 
-bool visit[20] = {};
-int d[20] = {};
+int n, count;
+int map[10][10];
+int x[100], y[100], l[100];
 
-void init_visit()
-{
-	for(int i=0;i<20;i++)
-		visit[i] = false;
+
+void save(int i, int j, int k)
+{ 
+	x[count] = i; 
+	y[count] = j; 
+	l[count] = k; 
+	count++; 
 }
 
-void add_map(int map[][20], int x, int y, int value)
-{
-	map[x][y] = value;
-	map[y][x] = value;
-}
 
-void init_map(int map[][20])
+void bfs(int i, int j)
 {
-	int i,j;
-	for(i=0;i<20;i++)
+	int pos = 0;
+	save(i, j, 1);
+
+	while (pos < count && (x[pos] != n - 1 || y[pos] != n - 1))
 	{
-		for(j=0;j<20;j++)
-				map[i][j] = NONE;
+		map[y[pos]][x[pos]] = 0;
+		if (y[pos] > 0 && map[y[pos] - 1][x[pos]] == 1)
+			save(x[pos], y[pos] - 1, l[pos] + 1);
+		if (y[pos] < n - 1 && map[y[pos] + 1][x[pos]] == 1)
+			save(x[pos], y[pos] + 1, l[pos] + 1);
+		if (x[pos] > 0 && map[y[pos]][x[pos] - 1] == 1)
+			save(x[pos] - 1, y[pos], l[pos] + 1);
+		if (x[pos] < n - 1 && map[y[pos]][x[pos] + 1] == 1)
+			save(x[pos] + 1, y[pos], l[pos] + 1);
+		pos++;
 	}
-}
-
-int getSmallIndex(int v) {
-	int min = NONE;
-	int index = 0;
-	for (int i =0; i < v; i++) {
-		if(d[i] < min && !visit[i]) {
-			min = d[i];
-			index = i;
-		}
-	}
-	return index;
-}
-
-void dijkstra(int map[][20] ,int start, int v){
-	for(int i =0; i < v; i++) {
-		d[i] = map[start][i];
-	}
-	visit[start] = true;
-	for(int i =0; i < v; i++) {
-		int current = getSmallIndex(v);
-		visit[current] = true;
-		for(int j=0; j < v; j++) {
-				if(d[current]+map[current][j] < d[j]) {
-					d[j] = d[current]+map[current][j];
-				}
-		}
-	}
+	if (pos < count) 
+		printf("%d\n", l[pos]);
 }
 
 int main()
 {
-	int map[20][20];
-	int tcase;
-	int result1,result2;
-	int v,e;
-	int start,mid,end;
-	int x,y,value;
-
-	while (scanf("%d",&tcase)!=EOF)
+	int i,j,k,row,col;
+	char buf[1024];
+	while(scanf("%d",&n)!=EOF)
 	{
 		getchar();
-		while (tcase>0)
+		row = n;
+		col = n;
+		for(i=0;i<row;i++)
 		{
-			scanf("%d %d",&v,&e);
-			getchar();
-			init_map(map);
-			init_visit();
-			while (e>0)
+			k = 0;
+			fgets(buf,1024,stdin);
+			for(j=0;j<col;j++)
 			{
-				scanf("%d %d %d",&x,&y,&value);
-				getchar();
-				add_map(map,x-1,y-1,value);
-				e--;
+				map[i][j] = buf[k]-'0';
+				k+=2;
 			}
-			scanf("%d %d %d",&start,&mid,&end);
-			getchar();
-			dijkstra(map,start-1,v);
-			result1 = d[mid-1];
-			init_visit();
-			dijkstra(map,mid-1,v);
-			result2 = d[end-1];
-			if (result1 == NONE || result2 == NONE)
-				printf("-1\n");
-			else
-				printf("%d\n",result1+result2);
-			tcase--;
 		}
+   		bfs(0,0);
 	}
+	return 0;
 }

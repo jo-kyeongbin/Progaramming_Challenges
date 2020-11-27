@@ -1,103 +1,80 @@
 #include <stdio.h>
 
-int n;
+int row, col;
 int map[10][10];
-int key;
 
-const int EXIST = -1;
-const int NONE = 0;
+const int PATHWAY = 1;
+const int BLOCKED = 4;
+const int PATH = 3;
+const int DST = 2;
 
 void print_map()
 {
-	int i,j;
-	for (i=0;i<n;i++)
+	int i,j,count;
+	count = 0;
+	for (i=0;i<row;i++)
 	{
-		for(j=0;j<n;j++)
+		for(j=0;j<col;j++)
 		{
-			printf("%d ",map[i][j]);
+			if (map[i][j]==PATH)
+			{
+				printf("1 ");
+				count++;
+			}
+			else if(map[i][j] == DST)
+			{
+				printf("%d ",DST);
+				count++;
+			}
+			else
+				printf("0 ");
 		}
 		printf("\n");
 	}
+	printf("%d\n",count);
 }
 
-int exist(void)
-{
-	int i, j;
-	for(i=0;i<n;i++)
-	{
-		for(j=0;j<n;j++)
-			if(map[i][j] == EXIST)
-				return 1;
-	}
-	return 0;
-}
 
-int find(int i, int j, int value)
+int find(int i, int j)
 {
-	if(i<0 || j<0 || i>=n || j>=n) {
+	if(i<0 || j<0 || i>=row || j>=col) {
     	return 0;
-    }
-	else if(exist() == 0){
+    }else if(map[i][j] != PATHWAY && map[i][j] != 2) return 0;
+    else if(map[i][j]==DST) {
+		printf("\n");
 		print_map();
-        return 1;
-    }
-	else if (map[i][j] < value && map[i][j] >= 0 && key != 1)
-	{
-		key = 0;
-		while(i<n)
-		{
-			while(j<n)
-			{
-				if(map[i][j] < value && map[i][j] >= 0)
-					j++;
-				if(map[i][j] == EXIST)
-				{
-					key = 1;
-					break;
-				}
-			}
-			if (key == 1)
-				break;
-			i++;
-			j=0;
-		}
-	}
-	if(map[i][j] == EXIST){
-		key = 1;
-		map[i][j] = value;
-        if(find(i, j+1,value) || find(i+1, j,value)
-		|| find(i, j-1, value) || find(i-1,j,value)) {
+        return 0;
+    }else {
+        map[i][j] = PATH;
+        if(find(i, j+1) || find(i+1, j)
+            || find(i, j-1) || find(i-1, j)) {
 			return 1;
-    	}
     }
-	return 0;
+	if (map[i][j]==PATH)
+		map[i][j] = PATHWAY;
+	else
+		map[i][j] = BLOCKED;
+    return 0;
+    }
 }
 
 int main()
 {
 	int i,j,k;
 	char buf[1024];
-	while(scanf("%d",&n)!=EOF)
+	while(scanf("%d %d",&row,&col)!=EOF)
 	{
 		getchar();
-		for(i=0;i<n;i++)
+		for(i=0;i<row;i++)
 		{
 			k = 0;
 			fgets(buf,1024,stdin);
-			for(j=0;j<n;j++)
+			for(j=0;j<col;j++)
 			{
 				map[i][j] = buf[k]-'0';
-				if (map[i][j] == 1)
-					map[i][j] = -1;
 				k+=2;
 			}
 		}
-		i = 1;
-		while (exist()!=0)
-		{
-   			key = 0;
-			find(0,0,i);
-			i++;
-		}
+   		find(0,0);
 	}
 }
